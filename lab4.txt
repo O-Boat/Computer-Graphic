@@ -1,0 +1,123 @@
+#include <iostream>
+#include <glut.h>
+#include <math.h>
+
+using namespace std;
+
+// variable Midpoint Ellipse Drawing
+int x, y, xPrev, yPrev, a, pk , b,aa,bb;
+
+int xPos, yPos;
+
+int i = 0;
+void init(void)
+{
+	glClearColor(1.0, 1.0, 1.0, 0.0);
+	glLineWidth(2.0);
+	glMatrixMode(GL_PROJECTION);
+	gluOrtho2D(0.0, 640.0, 0.0, 480.0);
+
+
+}
+
+void getRadius(void) // getXY for  get x,y axis and calculate.
+{
+	xPos = 320;
+	yPos = 240;
+	cout << "Enter A : ";
+	cin >> a;
+	cout << "Enter B : ";
+	cin >> b;
+	
+	aa = a * a; // a^2
+	bb = b * b; // b^2
+}
+
+void setPixel(int nx, int ny) {
+	glBegin(GL_POINTS);  // for start and config drawing with point.
+	glVertex2i(nx + xPos, ny + yPos);
+	glEnd();
+}
+
+void getRegion1(void) // set_next_pixel for drawing graph.
+{
+
+	x = 0;
+	y = b;
+	aa = a * a;
+	bb = b * b;
+	pk = bb + (aa / 4) - aa * b; //Initial decision parameter for Region1
+
+	while (2*x*bb < 2*y*aa)
+	{
+		setPixel(x, y);
+		setPixel(-x, y);
+		setPixel(-x, -y);
+		setPixel(x, -y);
+
+		
+
+		//last x and y
+		xPrev = x;
+		yPrev = y;
+
+		i++; // Iteration
+
+		x += 1; //Always x increases as unit interval
+		if (pk >= 0)
+			y -= 1;
+
+		pk = pk + bb + 2 * (xPrev + 1) * bb + aa * ((y * y) - (yPrev * yPrev)) - aa * (y - yPrev); //Calculate P1k+1
+
+	}
+}
+
+void getRegion2(void) {
+	pk = ((x + (1 / 2)) * (x + (1 / 2))) * bb + ((y - 1) * (y - 1)) * aa - (aa * bb); //Initial decision parameter for Region2
+
+	while (y >= 0)
+	{
+		setPixel(x, y);
+		setPixel(-x, y);
+		setPixel(-x, -y);
+		setPixel(x, -y);
+
+		xPrev = x;
+		yPrev = y;
+
+		y -= 1; //Always y decrease as unit interval
+
+		if (pk < 0)
+		{
+			x = x + 1;
+		}
+		pk = pk + aa - 2 * (yPrev - 1) * aa + bb * ((x * x) - (xPrev * xPrev)) + bb * (x - xPrev); //Calculate P2k+1
+
+	}
+}
+void getDisplay(void) {
+
+	glClear(GL_COLOR_BUFFER_BIT);
+	glPointSize(2);  // for set size of line.
+	glColor3f(0.0, 0.0, 1.0);  // color line sky
+
+	getRegion1();
+	getRegion2();
+	glFlush(); // for clear graphic buffer.
+}
+
+int main(int argc, char** argv) // The main funtion.
+{
+
+	getRadius(); // calling getXY function
+
+	glutInit(&argc, argv);  // for initial with GLUT.
+	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB); // config mode for display in you screen.
+	glutInitWindowPosition(100, 150); // config position of windows.
+	glutInitWindowSize(640, 480); // config size of windows.
+	glutCreateWindow("Midpoint Ellipse Drawing"); // config title of windows..
+	init(); // calling init function.
+	glutDisplayFunc(getDisplay); // display getPlot function.
+	glutMainLoop(); // loop for processing.
+
+}
