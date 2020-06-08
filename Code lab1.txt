@@ -1,0 +1,82 @@
+#include <iostream>
+#include <glut.h>
+
+using namespace std;
+
+float xs, ys, xe, ye; // DDA Algorithm
+float dx, dy, steps;
+float xinc, yinc;
+// Bresenham value
+float m, Pk, x, y, Xk, Yk;
+void init(void) {
+	glClearColor(1.0, 1.0, 1.0, 0.0);
+	glMatrixMode(GL_PROJECTION);
+	gluOrtho2D(0.0, 640.0, 0.0, 480.0);
+
+}
+
+void Sloop(void) {
+
+}
+
+void getInputXY(void) {
+
+	cout << "Enter XStart = ";
+	cin >> xs;
+	cout << "Enter YStart = ";
+	cin >> ys;
+	cout << "Enter XEnd = ";
+	cin >> xe;
+	cout << "Enter YEnd = ";
+	cin >> ye;
+
+	dx = xe - xs;
+	dy = ye - ys;
+
+	// calculate DDA Algorithm
+	if (abs(dx) > abs(dy))
+		steps = abs(dx);
+	else
+		steps = abs(dy);
+
+	xinc = dx / steps;
+	yinc = dy / steps;
+
+
+}
+
+void getDrawPlot(void) {
+	glClear(GL_COLOR_BUFFER_BIT); //clear screen
+
+
+	for (int i = 0; i < steps; i++) // Draw Points 
+	{
+		glPointSize(2); //size points
+
+		glColor3f(0.0, 0.0, 1.0); // color of line is Blue
+		glBegin(GL_POINTS); // start and config drawing with point
+		glVertex2i(round(xs), round(ys));
+		// round function for returns the integral.
+		// glVertex2i function for drawing with x axis and y axis.
+
+		xs = xs + xinc; // new x 
+		ys = ys + yinc; // new y 
+
+		glEnd(); //End Drawing
+	};
+	glFlush(); //clear graphic buffer
+
+}
+
+int main(int argc, char** argv)
+{
+	glutInit(&argc, argv); // initial with GLUT
+	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB); // config mode for display in you screen
+	glutInitWindowPosition(50, 100); //config position of windows
+	glutInitWindowSize(640, 480); //config size of windows
+	glutCreateWindow("DDA Line Segment"); // config title of windows
+	getInputXY(); //getInputXY
+	init(); // get init function
+	glutDisplayFunc(getDrawPlot); // display getPlot function
+	glutMainLoop(); // loop for processing
+}
